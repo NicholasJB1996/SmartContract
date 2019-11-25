@@ -92,6 +92,48 @@ contract
                         assert.equal(product.purchased, false, 'purchased is correct')
                     }
                 )
+
+                it
+                (
+                    'sells products', async () =>
+                    {
+                        //Track seller balance before purchase
+                        let oldSellerBalance
+                        oldSellerBalance = await web3.eth.getBalance(seller)
+                        oldSellerBalance = new web3.utils.BN(oldSellerBalance)
+                        result = await scsi.purchaseProduct(productCount, {from : buyer, value : web3.utils.toWei('1', 'Ether')})
+                        
+                        //logs
+                        const event = result.logs[0].args
+                        assert.equal(event.id.toNumber(), productCount.toNumber(), 'id is correct')
+                        assert.equal(event.name, 'Galaxy S9', 'name is correct')
+                        assert.equal(event.price, '1000000000000000000', 'price is correct')
+                        assert.equal(event.owner, buyer, 'owner is correct')
+                        assert.equal(event.purchased, true, 'purchased is correct')
+
+                        let newSellerBalance
+                        newSellerBalance = await web3.eth.getBalance(seller)
+                        newSellerBalance = new web3.utils.BN(newSellerBalance)
+
+                        let price
+                        price = web3.utils.toWei('1', 'Ether')
+                        price = new web3.utils.BN(price)
+
+                        const expectedBalance = oldSellerBalance.add(price)
+
+                        assert.equal(newSellerBalance.toString(), expectedBalance.toString())
+
+                        await scsi.purchaseProduct(99, {from : buyer, value : web3.utils.toWei('1', 'Ether')}).should.be.rejected;
+
+                        await scsi.purchaseProduct(productCount, {from : buyer, value : web3.utils.toWei('0.5', 'Ether')}).should.be.rejected;
+
+                        await scsi.purchaseProduct(productCount, {from : deployer, value : web3.utils.toWei('1', 'Ether')}).should.be.rejected;
+
+                        await scsi.purchaseProduct(productCount, {from : buyer, value : web3.utils.toWei('1', 'Ether')}).should.be.rejected;
+
+                    }
+                )
+
             }
         )
 

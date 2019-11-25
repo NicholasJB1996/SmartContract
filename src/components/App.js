@@ -3,6 +3,14 @@ import logo from '../logo.png';
 import './App.css';
 
 class App extends Component {
+
+  async loadweb3()
+  {
+    
+  }
+
+
+
   render() {
     return (
       <div>
@@ -13,7 +21,7 @@ class App extends Component {
             target="_blank"
             rel="noopener noreferrer"
           >
-            Dapp University
+            Smart Contract For Shared Inventory
           </a>
         </nav>
         <div className="container-fluid mt-5">
